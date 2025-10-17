@@ -70,9 +70,7 @@ def ocr_process(q: multiprocessing.Queue[Task], options):
                 use_formula_recognition=False,
                 use_chart_recognition=False,
             )
-            output_dict["output"] = [
-                PaddleResult.from_layout_result(result) for result in results
-            ]
+            output_dict["output"] = PaddleResult.from_layout_result(results[0])
         except Exception as e:
             traceback.print_exception(e)
             output_dict["output"] = ""
@@ -127,7 +125,7 @@ class PaddlePaddleEngine(OcrEngine):
         queue.put((img, output_dict, event))
         event.wait()
 
-        result = output_dict["output"][0]
+        result = output_dict["output"]
 
         paddleocr_to_pdf(
             image_filename=input_file,
