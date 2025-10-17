@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "ocrmypdf-paddlepaddle"
+version = "1.0.0"
+authors = ["Adrian Mazur <adrian.mazur@archman.pl>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.12, <3.14"
+numpy = ">=2, <2.3.0"
+ocrmypdf = "^16.11.0"
+pillow = "^11.3.0"
+opencv-python-headless = "^4.12.0.88"
+paddlepaddle = "^3.2.0"
+setuptools = "^80.9.0"
+paddleocr = { extras = ["doc-parser"], version = "^3.2.0" }
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=6.2.5"
+
+[tool.poetry.plugins."ocrmypdf"]
+ocrmypdf = "ocrmypdf_paddlepaddle"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.setuptools.package-data]
+ocrmypdf_paddlepaddle = ["pdf.ttf", "py.typed"]
