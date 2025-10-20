@@ -10,10 +10,11 @@ import traceback
 from typing import Optional, Tuple
 
 from paddleocr import PPStructureV3, __version__ as paddleocr_version
+from paddleocr._pipelines.base import create_pipeline
 import numpy.typing as npt
 from ocrmypdf import OcrEngine
 
-from ocrmypdf_paddlepaddle.config import ISO_639_3_2
+from ocrmypdf_paddlepaddle.config import ISO_639_3_2, load_pipeline_structure
 from ocrmypdf_paddlepaddle.core.models import PaddleResult
 
 try:
@@ -22,7 +23,6 @@ except ImportError:
     import multiprocessing
 
 logger = logging.getLogger(__name__)
-
 
 Task = Tuple[npt.NDArray, multiprocessing.Value, threading.Event] | None
 
@@ -49,28 +49,17 @@ def ocr_process(q: multiprocessing.Queue[Task], options):
                 # Build base kwargs for PPStructureV3
                 paddle_kwargs = {
                     "lang": languages[0],
-                    "use_table_recognition": True,
-                    "use_chart_recognition": False,
-                    "use_formula_recognition": False,
-                    "use_seal_recognition": False,
                 }
 
-                # Merge with custom model config
-                paddle_config = getattr(options, "_paddle_config", None)
-                if paddle_config:
-                    paddle_kwargs.update(paddle_config.to_ppstructure_kwargs())
+                # Get pipeline structure configuration path
+                pipeline_structure_path = getattr(options, "pipeline_structure", None)
+                config_path = load_pipeline_structure(pipeline_structure_path)
 
                 with contextlib.redirect_stdout(sys.stderr):
-                    reader = PPStructureV3(**paddle_kwargs)
+                    reader = create_pipeline(pipeline=config_path, **paddle_kwargs)
 
-            results = reader.predict(
-                input=img,
-                use_table_recognition=True,
-                use_seal_recognition=False,
-                use_formula_recognition=False,
-                use_chart_recognition=False,
-            )
-            output_dict["output"] = PaddleResult.from_layout_result(results[0])
+            results = reader.predict(input=img)
+            output_dict["output"] = PaddleResult.from_layout_result(list(results)[0])
         except Exception as e:
             traceback.print_exception(e)
             output_dict["output"] = ""

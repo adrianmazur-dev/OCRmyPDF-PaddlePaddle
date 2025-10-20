@@ -1,8 +1,23 @@
 from __future__ import annotations
-import json
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
+
+PIPELINE_CONFIG_PATH = (
+    Path(__file__).parent / "resources" / "configuration" / "pipeline-structure.yaml"
+)
+
+
+def load_pipeline_structure(custom_config_path: Optional[str] = None) -> str:
+    if custom_config_path:
+        config_path = Path(custom_config_path)
+        if not config_path.exists():
+            raise FileNotFoundError(
+                f"Custom pipeline configuration file not found: {custom_config_path}"
+            )
+        return str(config_path.resolve())
+
+    return str(PIPELINE_CONFIG_PATH)
+
 
 ISO_639_3_2: dict[str, str] = {
     "afr": "af",
@@ -51,34 +66,3 @@ ISO_639_3_2: dict[str, str] = {
     "tur": "tr",
     "ukr": "uk",
 }
-
-
-@dataclass
-class PaddleConfig:
-    # Text detection model
-    text_detection_model_name: Optional[str] = None
-    text_detection_model_dir: Optional[str] = None
-
-    # Text recognition model
-    text_recognition_model_name: Optional[str] = None
-    text_recognition_model_dir: Optional[str] = None
-
-    def to_ppstructure_kwargs(self) -> dict:
-        kwargs = {}
-        for key, value in self.__dict__.items():
-            if value is not None:
-                kwargs[key] = value
-        return kwargs
-
-    @classmethod
-    def from_dict(cls, data: dict) -> PaddleConfig:
-        valid_fields = {f.name for f in cls.__dataclass_fields__.values()}
-        filtered_data = {k: v for k, v in data.items() if k in valid_fields}
-        return cls(**filtered_data)
-
-    @classmethod
-    def from_json_file(cls, path: Path | str) -> PaddleConfig:
-        path = Path(path)
-        with open(path, "r") as f:
-            data = json.load(f)
-        return cls.from_dict(data)

@@ -9,7 +9,6 @@ from ocrmypdf.builtin_plugins.optimize import optimize_pdf as default_optimize_p
 
 from ocrmypdf_paddlepaddle.logging import setup_logging
 from ocrmypdf_paddlepaddle.core.engine import ocr_process, PaddlePaddleEngine
-from ocrmypdf_paddlepaddle.config import PaddleConfig
 
 setup_logging("DEBUG", "text")
 
@@ -38,38 +37,17 @@ def add_options(parser):
     options.add_argument("--engine-workers", type=int, default=1)
 
     options.add_argument(
-        "--paddle-config",
+        "--pipeline-structure",
         type=str,
         default=None,
-    )
-
-    options.add_argument(
-        "--text-detection-model-name",
-        type=str,
-        default=None,
-    )
-    options.add_argument(
-        "--text-detection-model-dir",
-        type=str,
-        default=None,
-    )
-
-    options.add_argument(
-        "--text-recognition-model-name",
-        type=str,
-        default=None,
-    )
-    options.add_argument(
-        "--text-recognition-model-dir",
-        type=str,
-        default=None,
+        metavar="PATH",
+        help="Path to custom pipeline structure YAML configuration file. "
+        "If not specified, uses default configuration.",
     )
 
 
 @hookimpl
 def check_options(options):
-    options._paddle_config = PaddleConfig.from_dict(options.__dict__)
-
     manager = multiprocessing.Manager()
     queue = multiprocessing.Queue(-1)
 
