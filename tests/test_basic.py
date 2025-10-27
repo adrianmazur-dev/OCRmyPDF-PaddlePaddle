@@ -1,6 +1,3 @@
-# SPDX-FileCopyrightText: 2023 James R. Barlow
-# SPDX-License-Identifier: MIT
-
 import ocrmypdf
 import pikepdf
 import pytest

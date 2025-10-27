@@ -1,6 +1,3 @@
-# SPDX-FileCopyrightText: 2023 James R. Barlow
-# SPDX-License-Identifier: MIT
-
 from pathlib import Path
 
 import pytest

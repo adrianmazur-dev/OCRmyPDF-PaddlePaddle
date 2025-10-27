@@ -16,6 +16,7 @@ from ocrmypdf import OcrEngine
 
 from ocrmypdf_paddlepaddle.config import ISO_639_3_2, load_pipeline_structure
 from ocrmypdf_paddlepaddle.core.models import PaddleResult
+from ocrmypdf_paddlepaddle.pipeline import LayoutParsingPipelineCustom  # noqa: F401
 
 try:
     import billiard as multiprocessing
@@ -46,9 +47,8 @@ def ocr_process(q: multiprocessing.Queue[Task], options):
             if reader is None:
                 languages = [ISO_639_3_2[lang] for lang in options.languages]
 
-                # Build base kwargs for PPStructureV3
                 paddle_kwargs = {
-                    "lang": languages[0],
+                    "lang": languages[0] if len(languages) == 1 else "eng",
                 }
 
                 # Get pipeline structure configuration path

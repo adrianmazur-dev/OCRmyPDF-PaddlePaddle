@@ -43,6 +43,7 @@ coverage.xml
 
 # Virtual environments
 venv/
+.conda/
 env/
 ENV/
 env.bak/
