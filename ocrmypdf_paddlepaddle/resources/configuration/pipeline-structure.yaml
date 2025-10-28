@@ -7,7 +7,7 @@ use_seal_recognition: False
 use_table_recognition: True
 use_formula_recognition: False
 use_chart_recognition: False
-use_region_detection: True
+use_region_detection: False
 format_block_content: False
 
 SubModules:
@@ -77,7 +77,7 @@ SubPipelines:
     pipeline_name: doc_preprocessor
     batch_size: 8
     use_doc_orientation_classify: True
-    use_doc_unwarping: True
+    use_doc_unwarping: False
     SubModules:
       DocOrientationClassify:
         module_name: doc_text_orientation

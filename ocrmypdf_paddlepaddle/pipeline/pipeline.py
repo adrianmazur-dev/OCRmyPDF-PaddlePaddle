@@ -284,9 +284,7 @@ class _LayoutParsingPipelineCustom(BasePipeline):
                     default_text_rec_score_thresh=self.general_ocr_pipeline.text_rec_score_thresh,
                 )
 
-                self._restore_formula_regions(
-                    doc_preprocessor_image, formula_res_list
-                )
+                self._restore_formula_regions(doc_preprocessor_image, formula_res_list)
 
                 single_img_res = {
                     "input_path": input_path,
@@ -379,9 +377,7 @@ class _LayoutParsingPipelineCustom(BasePipeline):
             return [item["formula_res_list"] for item in formula_res_all]
         return [[] for _ in images]
 
-    def _mask_formula_regions(
-        self, images: list, formula_res_lists: list
-    ) -> None:
+    def _mask_formula_regions(self, images: list, formula_res_lists: list) -> None:
         """Mask formula regions in images."""
         for image, formula_res_list in zip(images, formula_res_lists):
             for formula_res in formula_res_list:
@@ -422,9 +418,7 @@ class _LayoutParsingPipelineCustom(BasePipeline):
         )
 
         for overall_ocr_res in overall_ocr_results:
-            overall_ocr_res["rec_labels"] = ["text"] * len(
-                overall_ocr_res["rec_texts"]
-            )
+            overall_ocr_res["rec_labels"] = ["text"] * len(overall_ocr_res["rec_texts"])
 
         return overall_ocr_results
 
@@ -582,7 +576,9 @@ class _LayoutParsingPipelineCustom(BasePipeline):
             for bbox in layout_det_res["boxes"]:
                 if bbox["label"] == "chart":
                     x_min, y_min, x_max, y_max = bbox["coordinate"]
-                    chart_img = image[int(y_min) : int(y_max), int(x_min) : int(x_max), :]
+                    chart_img = image[
+                        int(y_min) : int(y_max), int(x_min) : int(x_max), :
+                    ]
                     chart_imgs_list.append({"image": chart_img})
 
             for chart_res_batch in self.chart_recognition_model(input=chart_imgs_list):

@@ -20,17 +20,7 @@ class PredictorInitializer:
         predictors = {}
         settings = {}
 
-        if (
-            config.get("use_doc_preprocessor", True)
-            or config.get("use_doc_orientation_classify", True)
-            or config.get("use_doc_unwarping", True)
-        ):
-            settings["use_doc_preprocessor"] = True
-        else:
-            settings["use_doc_preprocessor"] = False
-
-        settings["use_doc_preprocessor"] = False
-
+        settings["use_doc_preprocessor"] = config.get("use_doc_preprocessor", True)
         settings["use_table_recognition"] = config.get("use_table_recognition", True)
         settings["use_seal_recognition"] = config.get("use_seal_recognition", True)
         settings["format_block_content"] = config.get("format_block_content", False)

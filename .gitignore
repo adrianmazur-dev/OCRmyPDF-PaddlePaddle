@@ -71,3 +71,4 @@ dmypy.json
 # other
 lab/
 poetry.lock
+output_resources/

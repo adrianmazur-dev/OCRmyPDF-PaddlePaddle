@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import re
-from typing import Any, List, Union
+from typing import Any, Union
 
 import numpy as np
 from paddlex.inference.models.object_detection.result import DetResult
-from paddlex.inference.pipelines.layout_parsing.layout_objects import LayoutRegion
 from paddlex.inference.pipelines.layout_parsing.setting import BLOCK_LABEL_MAP
 from paddlex.inference.pipelines.ocr.result import OCRResult
 
