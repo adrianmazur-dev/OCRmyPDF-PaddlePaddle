@@ -9,8 +9,9 @@ import threading
 import traceback
 from typing import Optional, Tuple
 
-from paddleocr import PPStructureV3, __version__ as paddleocr_version
-from paddleocr._pipelines.base import create_pipeline
+from paddle import __version__ as paddle_version
+from paddlex import create_pipeline
+from paddlex.inference.pipelines.base import BasePipeline
 import numpy.typing as npt
 from ocrmypdf import OcrEngine
 
@@ -29,7 +30,7 @@ Task = Tuple[npt.NDArray, multiprocessing.Value, threading.Event] | None
 
 
 def ocr_process(q: multiprocessing.Queue[Task], options):
-    reader: Optional[PPStructureV3] = None
+    reader: Optional[BasePipeline] = None
 
     while True:
         message = q.get()
@@ -70,7 +71,7 @@ def ocr_process(q: multiprocessing.Queue[Task], options):
 class PaddlePaddleEngine(OcrEngine):
     @staticmethod
     def version():
-        return paddleocr_version
+        return paddle_version
 
     @staticmethod
     def creator_tag(options):
