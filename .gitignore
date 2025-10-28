@@ -43,6 +43,7 @@ coverage.xml
 
 # Virtual environments
 venv/
+.conda/
 env/
 ENV/
 env.bak/
@@ -70,3 +71,4 @@ dmypy.json
 # other
 lab/
 poetry.lock
+output_resources/
