@@ -16,6 +16,8 @@ from paddlex.inference.pipelines.layout_parsing.utils import (
 from paddlex.inference.pipelines.ocr.result import OCRResult
 from PIL import Image
 
+from ocrmypdf_paddlepaddle.pipeline.models import EnhancedLayoutBlock
+
 
 class LayoutObjectBuilder:
     @staticmethod
@@ -59,10 +61,21 @@ class LayoutObjectBuilder:
             block_bbox = box_info["coordinate"]
             rec_res = {"boxes": [], "rec_texts": [], "rec_labels": []}
 
-            block = LayoutBlock(label=label, bbox=block_bbox)
+            block = EnhancedLayoutBlock(label=label, bbox=block_bbox)
 
             if label == "table" and len(table_res_list) > 0:
                 block.content = table_res_list[table_index]["pred_html"]
+                block.generate_ocr_blocks(
+                    rec_texts=table_res_list[table_index]["table_ocr_pred"][
+                        "rec_texts"
+                    ],
+                    rec_boxes=table_res_list[table_index]["table_ocr_pred"][
+                        "rec_boxes"
+                    ],
+                    rec_scores=table_res_list[table_index]["table_ocr_pred"][
+                        "rec_scores"
+                    ],
+                )
                 table_index += 1
             elif label == "seal" and len(seal_res_list) > 0:
                 block.content = "\n".join(seal_res_list[seal_index]["rec_texts"])
@@ -75,9 +88,7 @@ class LayoutObjectBuilder:
                     _, ocr_idx_list = get_sub_regions_ocr_res(
                         overall_ocr_res, [block_bbox], return_match_idx=True
                     )
-                    region_block_ocr_idx_map["block_to_ocr_map"][box_idx] = (
-                        ocr_idx_list
-                    )
+                    region_block_ocr_idx_map["block_to_ocr_map"][box_idx] = ocr_idx_list
                 else:
                     ocr_idx_list = region_block_ocr_idx_map["block_to_ocr_map"].get(
                         box_idx, []

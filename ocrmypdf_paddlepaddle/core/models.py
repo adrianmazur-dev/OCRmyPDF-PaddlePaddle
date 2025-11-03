@@ -8,6 +8,8 @@ from paddlex.inference.pipelines.layout_parsing.xycut_enhanced.xycuts import (
 )
 from paddlex.inference.pipelines.layout_parsing.utils import get_sub_regions_ocr_res
 
+from ocrmypdf_paddlepaddle.pipeline.models import EnhancedLayoutBlock
+
 __all__ = [
     "PaddleBlock",
     "PaddleResult",
@@ -33,7 +35,12 @@ class PaddleResult:
         if overall_ocr_res and parsing_res_list:
             for block in parsing_res_list:
                 # Extract OCR words for this block
-                ocr_words = self._extract_ocr_words_for_block(block, overall_ocr_res)
+                if block.ocr_words:
+                    ocr_words = block.ocr_words
+                else:
+                    ocr_words = self._extract_ocr_words_for_block(
+                        block, overall_ocr_res
+                    )
 
                 # Create PaddleBlock instance
                 paddle_block = PaddleBlock(
@@ -49,7 +56,7 @@ class PaddleResult:
 
     @staticmethod
     def _extract_ocr_words_for_block(
-        block: LayoutBlock, overall_ocr_res: OCRResult
+        block: EnhancedLayoutBlock, overall_ocr_res: OCRResult
     ) -> list:
         # Get OCR indices within this block's bbox
         _, ocr_idx_list = get_sub_regions_ocr_res(
@@ -71,14 +78,10 @@ class PaddleResult:
 
         # Sort words by reading order if any words exist
         if ocr_words:
-            # Determine direction based on block type
-            direction = (
-                "vertical"
-                if block.label in ["table", "seal", "chart"]
-                else "horizontal"
-            )
             word_bboxes = [w["bbox"] for w in ocr_words]
-            sorted_indices = sort_by_xycut(word_bboxes, direction=direction, min_gap=1)
+            sorted_indices = sort_by_xycut(
+                word_bboxes, direction=block.direction, min_gap=1
+            )
             ocr_words = [ocr_words[i] for i in sorted_indices]
 
         return ocr_words
